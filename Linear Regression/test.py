@@ -67,3 +67,14 @@ predictions = linear.predict(X_test)
 # print prediction, what we predicted on, and the actual result
 for x in range(0, len(predictions)):
     print(predictions[x], X_test[x], y_test[x])
+
+
+######### GRID PRINTING ON DATA #########
+style.use("ggplot")
+
+# X attribute
+p = "G1"
+pyplot.scatter(data[p], data[predict])
+pyplot.xlabel(p)
+pyplot.ylabel("Final Grade (G3)")
+pyplot.show()
