@@ -3,6 +3,9 @@ import numpy as np
 import sklearn
 from sklearn import linear_model
 from sklearn.utils import shuffle
+import matplotlib.pyplot as pyplot
+import pickle
+from matplotlib import style
 
 data = pd.read_csv("student-mat.csv", sep=";")
 
@@ -24,14 +27,36 @@ y = np.array(data[predict])
 # x train and y train are a subset of x and y
 X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size=0.1)
 
-# create a linear regression model
-linear = linear_model.LinearRegression()
+# run the regression a total of 30 times, and save the data which has the highest accuracy
+# in studentModel.pickle
+"""
+bestScore = 0
+for i in range(0, 30):
+    # x train and y train are a subset of x and y
+    X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size=0.1)
 
-# fit it to the TRAINING data
-linear.fit(X_train, y_train)
+    # create a linear regression model
+    linear = linear_model.LinearRegression()
 
-# compare it against the TESTING data
-accuracy = linear.score(X_test, y_test)
+    # fit it to the TRAINING data
+    linear.fit(X_train, y_train)
+
+    # compare it against the TESTING data
+    accuracy = linear.score(X_test, y_test)
+
+    print("Accuracy was {}".format(accuracy))
+
+    if accuracy > bestScore:
+        bestScore = accuracy
+        # save model as a pickle file
+        with open("studentModel.pickle", "wb") as f:
+            pickle.dump(linear, f)
+"""
+
+# read in pickle file (which has the highest accuracy)
+pickle_in = open("studentModel.pickle", "rb")
+
+linear = pickle.load(pickle_in)
 
 # equation of the plane
 print("{}x + {}".format(linear.coef_, linear.intercept_))
