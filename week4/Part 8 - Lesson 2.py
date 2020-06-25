@@ -3,17 +3,6 @@ from tensorflow import keras
 from tensorflow.keras.optimizers import RMSprop
 import os
 
-train_datagen = ImageDataGenerator(rescale=1./255)
-
-# the directory we pass in is the one that contains the label directories
-# class mode is binary because we want to classify into 2
-train_generator = train_datagen.flow_from_directory(
-    os.path.join('./horse-or-human'),
-    target_size=(300, 300),
-    batch_size=128,
-    class_mode='binary'
-)
-
 # 300x300 image, and RGB (3 bytes)
 # in binary classifications, sigmoid is best used
 # it is a scalar between 0 and 1 representing which class it favours
@@ -64,6 +53,32 @@ model.compile(
     metrics=['accuracy']
 )
 
+# data preprocessing
+# data generators will read pictures from our source folders
+# convert them to float32 tensors, and feed them with their labels to the network
+# we have two generators, one for training, and one for validation images
+
+# first we normalize the data
+train_datagen = ImageDataGenerator(rescale=1/255)
+validation_datagen = ImageDataGenerator(rescale=1/255)
+
+# Flow training images in batches of 128 using train_datagen generator
+train_generator = train_datagen.flow_from_directory(
+        os.path.join('./horse-or-human'),  # This is the source directory for training images
+        target_size=(300, 300),  # All images will be resized to 300x300
+        batch_size=128, # default
+        # Since we use binary_crossentropy loss, we need binary labels
+        class_mode='binary')
+
+# Flow training images in batches of 128 using train_datagen generator
+validation_generator = validation_datagen.flow_from_directory(
+        os.path.join('./validation-horse-or-human'),  # This is the source directory for training images
+        target_size=(300, 300),  # All images will be resized to 300x300
+        batch_size=32,
+        # Since we use binary_crossentropy loss, we need binary labels
+        class_mode='binary')
+
+
 # fit model
 # train_generator is used to stream the images from the training directory
 # steps_per_epoch = total number of images / batch size = 1024 / 128 = 8
@@ -72,5 +87,7 @@ history = model.fit_generator(
     train_generator,
     steps_per_epoch=8,
     epochs=15,
-    verbose=1
+    verbose=1,
+    validation_data= validation_generator,
+    validation_steps=8
 )
