@@ -6,10 +6,12 @@ mnist = tf.keras.datasets.fashion_mnist
 
 (training_images, training_labels), (test_images, test_labels) = mnist.load_data()
 
-# convert the training images to a 4D array with size 60000x28x28x1
+# initially there are 60000 images of size 28x28
+# but Conv2D expects a 4D array with the fourth parameter being the channel
 training_images=training_images.reshape(60000, 28, 28, 1)
-training_images=training_images / 255.0
 test_images = test_images.reshape(10000, 28, 28, 1)
+
+training_images=training_images / 255.0
 test_images=test_images/255.0
 
 # convolution is used to detect patterns, and rely on image filters
@@ -18,7 +20,8 @@ test_images=test_images/255.0
 # create a 2x2 pools, for every 4 pixels, we take the biggest pixel
 # add another convolution and pool layer
 model = tf.keras.models.Sequential([
-  tf.keras.layers.Conv2D(64, (3,3), activation='relu', input_shape=(28, 28, 1)),
+  tf.keras.layers.InputLayer(input_shape=(28, 28, 1)),
+  tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
   tf.keras.layers.MaxPooling2D(2, 2),
   tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
   tf.keras.layers.MaxPooling2D(2,2),

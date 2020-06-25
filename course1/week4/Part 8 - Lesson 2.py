@@ -7,12 +7,14 @@ import os
 # in binary classifications, sigmoid is best used
 # it is a scalar between 0 and 1 representing which class it favours
 model = keras.models.Sequential([
-    keras.layers.Conv2D(16, (3,3), activation='relu', input_shape=(300, 300, 3)),
+    keras.layers.InputLayer(input_shape=(300, 300, 3)),
+    keras.layers.Conv2D(16, (3,3), activation='relu'),
     keras.layers.MaxPooling2D(2, 2),
-    keras.layers.Conv2D(32, (3,3), activation='relu', input_shape=(300, 300, 3)),
+    keras.layers.Conv2D(32, (3,3), activation='relu'),
     keras.layers.MaxPooling2D(2, 2),
-    keras.layers.Conv2D(64, (3,3), activation='relu', input_shape=(300, 300, 3)),
+    keras.layers.Conv2D(64, (3,3), activation='relu'),
     keras.layers.MaxPooling2D(2, 2),
+
     keras.layers.Flatten(),
     keras.layers.Dense(512, activation='relu'),
     keras.layers.Dense(1, activation='sigmoid')
@@ -70,7 +72,7 @@ train_generator = train_datagen.flow_from_directory(
         # Since we use binary_crossentropy loss, we need binary labels
         class_mode='binary')
 
-# Flow training images in batches of 128 using train_datagen generator
+# Flow validation images in batches of 32 using validation_datagen generator
 validation_generator = validation_datagen.flow_from_directory(
         os.path.join('./validation-horse-or-human'),  # This is the source directory for training images
         target_size=(300, 300),  # All images will be resized to 300x300
@@ -81,7 +83,7 @@ validation_generator = validation_datagen.flow_from_directory(
 
 # fit model
 # train_generator is used to stream the images from the training directory
-# steps_per_epoch = total number of images / batch size = 1024 / 128 = 8
+# steps_per_epoch = total number of images in training / batch size = 1024 / 128 = 8
 # total epochs to run for
 history = model.fit_generator(
     train_generator,

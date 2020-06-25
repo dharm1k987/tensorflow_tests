@@ -2,8 +2,14 @@ import tensorflow as tf
 import numpy as np
 from tensorflow import keras
 
-# 1 layer, 1 neuron
-model = tf.keras.Sequential([keras.layers.Dense(units=1, input_shape=[1])])
+# units is the number of neurons in the layer
+# input_shape is how many inputs go into the first layer
+# 1D array, so no need to flatten
+model = tf.keras.Sequential([
+    keras.layers.InputLayer(input_shape=(1,)),
+    keras.layers.Flatten(),
+    keras.layers.Dense(units=1)
+])
 
 # loss fn measures guessed answer against true answers
 # optimizer is used to make guesses

@@ -20,6 +20,7 @@ x_train = x_train / 255.0
 x_test = x_test / 255.0
 
 model = tf.keras.models.Sequential([
+    keras.layers.InputLayer(input_shape=(28, 28, 1)),
     keras.layers.Flatten(),
     keras.layers.Dense(512, activation=tf.nn.relu),
     keras.layers.Dense(10, activation=tf.nn.softmax)

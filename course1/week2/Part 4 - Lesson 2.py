@@ -10,6 +10,8 @@ class myCallback(tf.keras.callbacks.Callback):
 callbacks = myCallback()
 
 fashion_mnist = keras.datasets.fashion_mnist
+
+# there are 60000 images of size 28x28
 (train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
 
 # normalize the data
@@ -21,20 +23,25 @@ test_images = test_images / 255.0
 # 10 outside layers representing numbers 0-9
 
 # sequential means a sequence of layers
-# flatten means turn into 1D set
+# we must flatten the 28x28 layer
 # dense adds a layer of neurons
 # relu means if X>0 return X else 0
-# softmax takes the set of values in the last layer, and picks the largest one
+# softmax takes the set of values in the last layer, and picks the largest one via probability
     #  [0.1, 0.1, 0.05, 0.1, 9.5, 0.1, 0.05, 0.05, 0.05] -> [0,0,0,0,1,0,0,0,0]
 model = keras.Sequential([
+    keras.layers.InputLayer(input_shape=(28, 28, 1)),
     keras.layers.Flatten(),
-    keras.layers.Dense(512, activation=tf.nn.relu),
+    keras.layers.Dense(128, activation=tf.nn.relu),
     keras.layers.Dense(10, activation=tf.nn.softmax)
 ])
 
+model.summary()
+
+# for multiclass classifications, use categorical crossentropy
 model.compile(optimizer = tf.optimizers.Adam(),
               loss = 'sparse_categorical_crossentropy',
               metrics=['accuracy'])
+
 model.fit(train_images, train_labels, epochs=5, callbacks=[callbacks])
 
 model.evaluate(test_images, test_labels)
