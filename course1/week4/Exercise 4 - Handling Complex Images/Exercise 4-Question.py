@@ -5,7 +5,7 @@ DESIRED_ACCURACY = 0.999
 
 class myCallback(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs={}):
-        if(logs.get('accuracy')>DESIRED_ACCURACY):
+        if(logs.get('val_accuracy')>DESIRED_ACCURACY):
             print("\nReached 99.9% accuracy so cancelling training!")
             self.model.stop_training = True
 
@@ -41,20 +41,37 @@ model.compile(
 
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-train_datagen = ImageDataGenerator(rescale=1/255)
+batch_size = 3
+validation_split = 0.2
+e_in_train = 80 * (1 - validation_split)
+e_in_valid = 80 * validation_split
+
+
+train_datagen = ImageDataGenerator(rescale=1/255, validation_split=0.2)
 
 # grab all the data from the directory
 train_generator = train_datagen.flow_from_directory(
     os.path.join('./happy-or-sad'),  
     target_size=(150, 150), # the image size is 150x150
-    batch_size=10, # since there are only 80 images in total, we will take batch size of 10
-    class_mode='binary' # happy or sad
+    batch_size=batch_size, # since there are only 80 images in total, we will take batch size of 10
+    class_mode='binary', # happy or sad
+    subset='training'
 )
 
-history = model.fit(
+validation_generator = train_datagen.flow_from_directory(
+    os.path.join('./happy-or-sad'),  
+    target_size=(150, 150), # the image size is 150x150
+    batch_size=batch_size, # since there are only 80 images in total, we will take batch size of 10
+    class_mode='binary', # happy or sad
+    subset='validation'
+)
+
+history = model.fit_generator(
     train_generator,
-    steps_per_epoch=8, # 80 / batch size = 80 / 10 = 8
+    steps_per_epoch=e_in_train // batch_size, # 80 / batch size = 80 / 10 = 8
     epochs=15,
     verbose=1,
+    validation_data=validation_generator,
+    validation_steps=e_in_valid // batch_size,
     callbacks=[callbacks]
 )
