@@ -94,7 +94,7 @@ callbacks = myCallback()
 history = model.fit(train_generator,
         validation_data=validation_generator,
         steps_per_epoch=100, # 2000 training / 20 = 100
-        epochs=100,
+        epochs=3,
         validation_steps=50, # 1000 test / 20 = 50 
         verbose=2
 )
