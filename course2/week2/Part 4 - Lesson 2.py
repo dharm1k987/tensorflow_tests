@@ -56,16 +56,7 @@ train_datagen = ImageDataGenerator(
     fill_mode='nearest' # fills in any pixels that might be lost by the operation    
 )
 
-test_datagen = ImageDataGenerator(
-    rescale=1/255,
-    rotation_range=40, # image will rotate a random amt between 0 - 40 degrees
-    width_shift_range=0.2, # offset image by 20% left/right
-    height_shift_range=0.2, # offset image by 20% up/down,
-    shear_range=0.2, # skew image 20%
-    zoom_range=0.2, # zoom any amount up till 20%
-    horizontal_flip=True,
-    fill_mode='nearest' # fills in any pixels that might be lost by the operation    
-)
+test_datagen = ImageDataGenerator(rescale=1/255)
 
 # training images
 train_generator = train_datagen.flow_from_directory(
