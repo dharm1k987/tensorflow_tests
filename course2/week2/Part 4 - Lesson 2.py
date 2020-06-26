@@ -3,7 +3,7 @@ import os
 
 model = tf.keras.models.Sequential([
     tf.keras.layers.InputLayer(input_shape=(150, 150, 3)),
-    tf.keras.layers.Conv2D(32, (3, 3), activation='relu'),
+    tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
     tf.keras.layers.MaxPooling2D(2, 2),
     tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
     tf.keras.layers.MaxPooling2D(2, 2),
@@ -14,11 +14,12 @@ model = tf.keras.models.Sequential([
 
     # flatten the results to put in dense neural network
     tf.keras.layers.Flatten(),
+    tf.keras.layers.Dropout(0.5),
     # 512 neuron hidden layer
     tf.keras.layers.Dense(512, activation='relu'),
 
-    # only 1 output neuron, it will contain value 0-1 where 0 = cat, 1 = dog
-    tf.keras.layers.Dense(1, activation='sigmoid')
+    # 3 outputs, so we use softmax instead of sigmoid
+    tf.keras.layers.Dense(3, activation='softmax')
 ])
 
 model.summary()
@@ -26,8 +27,10 @@ model.summary()
 from tensorflow.keras.optimizers import RMSprop
 
 # could also have used adam here
+# notice we use categorical_crossentropy instead of binary_crossentropy because there are
+# more than 2 choices
 model.compile(optimizer=RMSprop(lr=0.001),
-              loss='binary_crossentropy',
+              loss='categorical_crossentropy',
               metrics= ['accuracy']
 )
 
@@ -59,16 +62,18 @@ train_datagen = ImageDataGenerator(
 test_datagen = ImageDataGenerator(rescale=1/255)
 
 # training images
+# notice that the class_mode is categorical instead of binary
 train_generator = train_datagen.flow_from_directory(
-    os.path.join('../week1/cats_and_dogs_filtered/train'),
-    batch_size=20,
-    class_mode='binary',
+    os.path.join('./rps'),
+    batch_size=126,
+    class_mode='categorical',
     target_size=(150, 150)
 )
 
+# notice that the class_mode is categorical instead of binary
 validation_generator = test_datagen.flow_from_directory(
-    os.path.join('../week1/cats_and_dogs_filtered/validation'),
-    batch_size=20,
+    os.path.join('./rps-test-set'),
+    batch_size=126,
     class_mode='binary',
     target_size=(150, 150)
 )
@@ -77,8 +82,8 @@ validation_generator = test_datagen.flow_from_directory(
 
 history = model.fit(train_generator,
                 validation_data=validation_generator,
-                steps_per_epoch=100, # 2000 training / 20 = 100
-                epochs=100,
-                validation_steps=50, # 1000 test / 20 = 50 
-                verbose=2
+                steps_per_epoch=20,
+                epochs=25,
+                validation_steps=3,
+                verbose=1
 )
