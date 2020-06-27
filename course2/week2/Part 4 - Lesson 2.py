@@ -74,12 +74,12 @@ train_generator = train_datagen.flow_from_directory(
 validation_generator = test_datagen.flow_from_directory(
     os.path.join('./rps-test-set'),
     batch_size=126,
-    class_mode='binary',
+    class_mode='categorical',
     target_size=(150, 150)
 )
 
 # run the model
-
+test_datagen.flow
 history = model.fit(train_generator,
                 validation_data=validation_generator,
                 steps_per_epoch=20,
