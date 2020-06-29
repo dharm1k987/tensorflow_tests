@@ -80,6 +80,7 @@ model.fit(
 )
 
 #########################
+# http://projector.tensorflow.org/
 print("Generating .tsv file")
 reverse_word_index = dict([(value, key) for (key, value) in word_index.items()])
 
@@ -102,14 +103,13 @@ out_m.close()
 #########################
 
 print("Predictions:")
-tokenizer = Tokenizer(num_words=vocab_size, oov_token=oov_tok)
 training_sentences = [
     'This is an amazing movie that is really great and fun to watch',
     'The movie is terrible and sad and lacks taste. Terrible storytelling and unfavourable acting'
 ]
-tokenizer.fit_on_texts(training_sentences)
-word_index = tokenizer.word_index
+# use the same tokenizer, and convert the sentence to numbers
 sequences = tokenizer.texts_to_sequences(training_sentences)
+# pad and test
 padded = pad_sequences(sequences, maxlen=max_length, truncating=trunc_type)
 
 print(model.predict(padded))
