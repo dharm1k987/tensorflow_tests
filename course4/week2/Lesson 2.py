@@ -75,7 +75,9 @@ model.compile(loss="mse", optimizer=tf.keras.optimizers.SGD(lr=1e-6, momentum=0.
 # dataset contains x and y
 model.fit(dataset, epochs=100, verbose=1)
 
-# get the 20 layer weights
+# get the 20 (window size) layer weights
+# 19 of them will be weights, and the 20th is the b (y intercept) value
+# new value = Wt0 * X0 + Wt1 * X1 + ... + Wt19 * X19 + b
 print("Layer weights {}".format(l0.get_weights()))
 
 # prediction
